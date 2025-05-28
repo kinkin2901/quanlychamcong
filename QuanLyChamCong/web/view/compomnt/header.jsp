@@ -13,6 +13,29 @@
         <link href="${pageContext.request.contextPath}/view/lib/assets/extra-libs/c3/c3.min.css" rel="stylesheet">
         <link href="${pageContext.request.contextPath}/view/lib/assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
         <link href="${pageContext.request.contextPath}/view/lib/dist/css/style.min.css" rel="stylesheet">
+         <style>
+                        /* Căn search box sang phải */
+                        div.dataTables_filter {
+                            float: right !important;
+                            text-align: right;
+                        }
+
+                        /* Căn phân trang sang phải */
+                        div.dataTables_paginate {
+                            float: right !important;
+                            text-align: right;
+                        }
+
+                        /* Căn "Show entries" sang trái (tuỳ chọn) */
+                        div.dataTables_length {
+                            float: left !important;
+                        }
+
+                        /* Tăng khoảng cách giữa các control nếu cần */
+                        .dataTables_wrapper .dataTables_filter input {
+                            margin-left: 0.5rem;
+                        }
+                    </style>
     </head>
     <body>
 

@@ -49,9 +49,23 @@
                         <li class="sidebar-item">
     <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/manager/leave-requests">
         <i data-feather="file-text" class="feather-icon"></i>
-        <span class="hide-menu">Đơn xin nghỉ</span>
+        <span class="hide-menu">Quản lý đơn xin nghỉ</span>
     </a>
 </li>
+<li class="sidebar-item">
+    <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/employee/leave-request-create">
+        <i data-feather="file-plus" class="feather-icon"></i>
+        <span class="hide-menu">Tạo đơn nghỉ</span>
+    </a>
+</li>
+
+<li class="sidebar-item">
+    <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/employee/leave-requests">
+        <i data-feather="list" class="feather-icon"></i>
+        <span class="hide-menu">Danh sách đơn</span>
+    </a>
+</li>
+
 
 
                         <li class="sidebar-item">
