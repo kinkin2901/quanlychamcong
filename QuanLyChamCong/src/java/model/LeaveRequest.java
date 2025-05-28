@@ -4,7 +4,7 @@
  */
 package model;
 
-import io.opencensus.common.Timestamp;
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class LeaveRequest {
@@ -19,6 +19,7 @@ public class LeaveRequest {
     private String reason;
     private Timestamp createdAt;
     private Users approvedBy;
+    private String approveComment;
 
     public LeaveRequest() {
     }
@@ -114,6 +115,14 @@ public class LeaveRequest {
 
     public void setApprovedBy(Users approvedBy) {
         this.approvedBy = approvedBy;
+    }
+
+    public String getApproveComment() {
+        return approveComment;
+    }
+
+    public void setApproveComment(String approveComment) {
+        this.approveComment = approveComment;
     }
 
     @Override

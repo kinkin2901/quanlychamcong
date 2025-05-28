@@ -46,6 +46,13 @@
                                 <span class="hide-menu">Phân công nhân viên</span>
                             </a>
                         </li>
+                        <li class="sidebar-item">
+    <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/manager/leave-requests">
+        <i data-feather="file-text" class="feather-icon"></i>
+        <span class="hide-menu">Đơn xin nghỉ</span>
+    </a>
+</li>
+
 
                         <li class="sidebar-item">
                             <a class="sidebar-link sidebar-link" href="${pageContext.request.contextPath}/attendance">
