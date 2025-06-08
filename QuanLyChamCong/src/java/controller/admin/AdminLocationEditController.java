@@ -1,4 +1,4 @@
-package conntroller.admin;
+package controller.admin;
 
 import dal.LocationDAO;
 import jakarta.servlet.ServletException;

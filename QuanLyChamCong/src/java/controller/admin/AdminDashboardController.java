@@ -3,9 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package conntroller.admin;
+package controller.admin;
 
-import dal.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,8 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 
-@WebServlet(name="AdminUserUnbanController", urlPatterns={"/admin/user-unban"})
-public class AdminUserUnbanController extends HttpServlet {
+@WebServlet(name="AdminDashboardController", urlPatterns={"/admin-dashboard"})
+public class AdminDashboardController extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -33,10 +32,10 @@ public class AdminUserUnbanController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AdminUserUnbanController</title>");  
+            out.println("<title>Servlet AdminDashboardController</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AdminUserUnbanController at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet AdminDashboardController at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -52,15 +51,9 @@ public class AdminUserUnbanController extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        int userId = Integer.parseInt(request.getParameter("userId"));
-        UserDAO dao = new UserDAO();
-        dao.unbanUser(userId);  // cập nhật trạng thái = 'active'
-
-        request.getSession().setAttribute("message", "Đã mở khóa tài khoản.");
-        response.sendRedirect(request.getContextPath() + "/admin/users");
-    }
+    throws ServletException, IOException {
+        processRequest(request, response);
+    } 
 
     /** 
      * Handles the HTTP <code>POST</code> method.

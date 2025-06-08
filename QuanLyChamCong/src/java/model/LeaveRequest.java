@@ -6,6 +6,7 @@ package model;
 
 import java.sql.Timestamp;
 import java.sql.Date;
+import java.util.List;
 
 public class LeaveRequest {
 
@@ -21,10 +22,14 @@ public class LeaveRequest {
     private Users approvedBy;
     private String approveComment;
 
+    private List<Locations> locations;
+
     public LeaveRequest() {
     }
 
-    public LeaveRequest(int requestId, Users user, Date startDate, Date endDate, String leaveType, String status, int daysCount, String reason, Timestamp createdAt, Users approvedBy) {
+
+
+    public LeaveRequest(int requestId, Users user, Date startDate, Date endDate, String leaveType, String status, int daysCount, String reason, Timestamp createdAt, Users approvedBy, String approveComment, List<Locations> locations) {
         this.requestId = requestId;
         this.user = user;
         this.startDate = startDate;
@@ -35,6 +40,16 @@ public class LeaveRequest {
         this.reason = reason;
         this.createdAt = createdAt;
         this.approvedBy = approvedBy;
+        this.approveComment = approveComment;
+        this.locations = locations;
+    }
+
+    public List<Locations> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(List<Locations> locations) {
+        this.locations = locations;
     }
 
     public int getRequestId() {
@@ -127,7 +142,7 @@ public class LeaveRequest {
 
     @Override
     public String toString() {
-        return "LeaveRequest{" + "requestId=" + requestId + ", user=" + user + ", startDate=" + startDate + ", endDate=" + endDate + ", leaveType=" + leaveType + ", status=" + status + ", daysCount=" + daysCount + ", reason=" + reason + ", createdAt=" + createdAt + ", approvedBy=" + approvedBy + '}';
+        return "LeaveRequest{" + "requestId=" + requestId + ", user=" + user + ", startDate=" + startDate + ", endDate=" + endDate + ", leaveType=" + leaveType + ", status=" + status + ", daysCount=" + daysCount + ", reason=" + reason + ", createdAt=" + createdAt + ", approvedBy=" + approvedBy + ", approveComment=" + approveComment + ", locations=" + locations + '}';
     }
 
 }

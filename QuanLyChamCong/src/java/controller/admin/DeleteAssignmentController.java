@@ -2,9 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package conntroller.admin;
+package controller.admin;
 
+import dal.LocationDAO;
 import dal.UserDAO;
+import dal.UserLocationDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,11 +14,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
+import model.Locations;
 import model.Users;
+import utils.EmailUtils;
 
-@WebServlet(name = "AdminUserListController", urlPatterns = {"/admin/users"})
-public class AdminUserListController extends HttpServlet {
+@WebServlet(name = "DeleteAssignmentController", urlPatterns = {"/admin/delete-assignment"})
+public class DeleteAssignmentController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,10 +38,10 @@ public class AdminUserListController extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AdminUserListController</title>");
+            out.println("<title>Servlet DeleteAssignmentController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AdminUserListController at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet DeleteAssignmentController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -56,10 +59,7 @@ public class AdminUserListController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        UserDAO dao = new UserDAO();
-        List<Users> userList = dao.getAllUsers();
-        request.setAttribute("userList", userList);
-        request.getRequestDispatcher("/view/admin/user-list.jsp").forward(request, response);
+        processRequest(request, response);
     }
 
     /**
@@ -73,7 +73,29 @@ public class AdminUserListController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        int userId = Integer.parseInt(request.getParameter("userId"));
+        int locationId = Integer.parseInt(request.getParameter("locationId"));
+
+        UserLocationDAO dao = new UserLocationDAO();
+        boolean success = dao.deleteAssignment(userId, locationId);
+
+        if (success) {
+            UserDAO userDao = new UserDAO();
+            Users user = userDao.getUserById(userId);
+            LocationDAO ld = new LocationDAO();
+            Locations location = ld.getLocationById(locationId);
+            String subject = "Phân công bị hủy";
+            String content = String.format(
+                    "<p>Xin chào %s,</p><p>Phân công của bạn tại chi nhánh <strong>%s</strong> đã bị hủy.</p>",
+                    user.getFullName(), location.getName());
+
+            EmailUtils.sendEmail(user.getEmail(), subject, content);
+            request.getSession().setAttribute("message", "Đã xóa phân công và gửi email");
+        } else {
+            request.getSession().setAttribute("error", "Xóa phân công thất bại");
+        }
+
+        response.sendRedirect(request.getContextPath() + "/admin/assign-user-location");
     }
 
     /**
