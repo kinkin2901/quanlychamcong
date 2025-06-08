@@ -6,6 +6,8 @@ import java.sql.*;
 import java.util.*;
 import java.sql.Date;
 import java.time.LocalDate;
+import model.LeaveConfig;
+import model.LeaveType;
 import model.Locations;
 
 public class LeaveRequestDAO extends DBContext {
@@ -295,4 +297,140 @@ public class LeaveRequestDAO extends DBContext {
             System.out.println("❌ Không tìm thấy đơn xin nghỉ với ID = " + testId);
         }
     }
+
+    // Lấy danh sách LeaveConfig
+    public List<LeaveConfig> getAllConfigs() {
+        List<LeaveConfig> list = new ArrayList<>();
+        String sql = "SELECT lc.*, u.user_id, u.full_name "
+                + "FROM leave_config lc "
+                + "LEFT JOIN users u ON lc.created_by = u.user_id "
+                + "ORDER BY lc.year DESC, lc.leave_type";
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                LeaveConfig config = new LeaveConfig();
+                config.setConfigId(rs.getInt("config_id"));
+                config.setYear(rs.getInt("year"));
+                config.setLeaveType(rs.getString("leave_type"));
+                config.setDefaultDays(rs.getInt("default_days"));
+
+                // Lấy thông tin user tạo
+                Users createdBy = new Users();
+                createdBy.setUserId(rs.getInt("user_id"));
+                createdBy.setFullName(rs.getString("full_name"));
+
+                config.setCreatedBy(createdBy);
+
+                list.add(config);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+// Thêm mới LeaveConfig
+
+    public boolean addConfig(LeaveConfig config) {
+        String sql = "INSERT INTO leave_config (year, leave_type, default_days, created_by) "
+                + "VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, config.getYear());
+            ps.setString(2, config.getLeaveType());
+            ps.setInt(3, config.getDefaultDays());
+            ps.setInt(4, config.getCreatedBy().getUserId());
+
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+// Xóa LeaveConfig
+
+    public boolean deleteConfig(int configId) {
+        String sql = "DELETE FROM leave_config WHERE config_id = ?";
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, configId);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean addLeaveType(LeaveType newType) {
+        String sql = "INSERT INTO leave_types (leave_type_name) VALUES (?)";
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, newType.getLeaveTypeName());
+
+            int rowsAffected = ps.executeUpdate();
+
+            return rowsAffected > 0;  // Trả về true nếu thêm thành công
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteLeaveType(int id) {
+        String sql = "DELETE FROM leave_types WHERE leave_type_id = ?";
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            int rowsAffected = ps.executeUpdate();
+
+            return rowsAffected > 0;  // Trả về true nếu xóa thành công
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<LeaveType> getAllLeaveTypes() {
+        List<LeaveType> list = new ArrayList<>();
+        String sql = "SELECT leave_type_id, leave_type_name, status FROM leave_types ORDER BY leave_type_name";
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                LeaveType lt = new LeaveType();
+                lt.setLeaveTypeId(rs.getInt("leave_type_id"));
+                lt.setLeaveTypeName(rs.getString("leave_type_name"));
+                lt.setStatus(rs.getString("status"));
+
+                list.add(lt);
+            }
+
+        } catch (Exception e) {
+            System.err.println("❌ Error in getAllLeaveTypes:");
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public boolean toggleLeaveTypeStatus(int id) {
+        String sql = "UPDATE leave_types SET status = CASE WHEN status = 'active' THEN 'inactive' ELSE 'active' END WHERE leave_type_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
