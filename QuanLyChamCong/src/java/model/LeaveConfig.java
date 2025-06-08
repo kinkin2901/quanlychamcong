@@ -8,20 +8,22 @@ public class LeaveConfig {
 
     private int configId;
     private int year;
-    private LeaveType leaveType;
     private int defaultDays;
     private Users createdBy;
+        private LeaveType leaveTypeId;
+
 
     public LeaveConfig() {
     }
 
-    public LeaveConfig(int configId, int year, LeaveType leaveType, int defaultDays, Users createdBy) {
+    public LeaveConfig(int configId, int year, int defaultDays, Users createdBy, LeaveType leaveTypeId) {
         this.configId = configId;
         this.year = year;
-        this.leaveType = leaveType;
         this.defaultDays = defaultDays;
         this.createdBy = createdBy;
+        this.leaveTypeId = leaveTypeId;
     }
+
 
     public int getConfigId() {
         return configId;
@@ -39,13 +41,15 @@ public class LeaveConfig {
         this.year = year;
     }
 
-    public LeaveType getLeaveType() {
-        return leaveType;
+    public LeaveType getLeaveTypeId() {
+        return leaveTypeId;
     }
 
-    public void setLeaveType(LeaveType leaveType) {
-        this.leaveType = leaveType;
+    public void setLeaveTypeId(LeaveType leaveTypeId) {
+        this.leaveTypeId = leaveTypeId;
     }
+
+   
 
     public int getDefaultDays() {
         return defaultDays;
@@ -65,7 +69,9 @@ public class LeaveConfig {
 
     @Override
     public String toString() {
-        return "LeaveConfig{" + "configId=" + configId + ", year=" + year + ", leaveType=" + leaveType + ", defaultDays=" + defaultDays + ", createdBy=" + createdBy + '}';
+        return "LeaveConfig{" + "configId=" + configId + ", year=" + year + ", defaultDays=" + defaultDays + ", createdBy=" + createdBy + ", leaveTypeId=" + leaveTypeId + '}';
     }
+
+ 
 
 }

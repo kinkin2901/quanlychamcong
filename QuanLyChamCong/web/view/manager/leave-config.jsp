@@ -45,19 +45,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <c:forEach var="config" items="${leaveConfigs}" varStatus="loop">
+                                <c:forEach var="config" items="${configs}" varStatus="loop">
                                     <tr>
                                         <td>${loop.index + 1}</td>
                                         <td>${config.year}</td>
-                                        <td>${config.leaveType}</td>
+                                        <td>${config.leaveTypeId.leaveTypeName}</td>
                                         <td>${config.defaultDays}</td>
                                         <td>${config.createdBy.fullName}</td>
                                         <td>
-                                            <a href="${pageContext.request.contextPath}/manager/leave-config/delete?id=${config.configId}" 
-                                               class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xoá cấu hình này?');">
-                                                Xoá
+                                            <a href="${pageContext.request.contextPath}/manager/leave-config-edit?id=${config.configId}" 
+                                               class="btn btn-sm btn-primary">
+                                                Sửa
                                             </a>
                                         </td>
+
                                     </tr>
                                 </c:forEach>
 

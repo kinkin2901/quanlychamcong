@@ -13,7 +13,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import model.LeaveConfig;
+import model.LeaveType;
 import model.Users;
 
 @WebServlet(name = "ManagerLeaveConfigAddController", urlPatterns = {"/manager/leave-config-add"})
@@ -22,7 +24,12 @@ public class ManagerLeaveConfigAddController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Hiển thị form thêm mới
+
+        // Load danh sách leaveTypes để đổ vào select box
+        LeaveRequestDAO dao = new LeaveRequestDAO();
+        List<LeaveType> leaveTypes = dao.getAllLeaveTypesActive();
+
+        request.setAttribute("leaveTypes", leaveTypes);
         request.getRequestDispatcher("/view/manager/leave-config-add.jsp").forward(request, response);
     }
 
@@ -40,30 +47,44 @@ public class ManagerLeaveConfigAddController extends HttpServlet {
 
         try {
             int year = Integer.parseInt(request.getParameter("year"));
-            String leaveType = request.getParameter("leaveType");
+            int leaveTypeId = Integer.parseInt(request.getParameter("leaveTypeId"));
             int defaultDays = Integer.parseInt(request.getParameter("defaultDays"));
 
             LeaveConfig config = new LeaveConfig();
             config.setYear(year);
-            config.setLeaveType(leaveType);
+
+            LeaveRequestDAO dao = new LeaveRequestDAO();
+
+            // Lấy LeaveType object
+            LeaveType leaveType = dao.getLeaveTypeById(leaveTypeId);
+            config.setLeaveTypeId(leaveType);
+
             config.setDefaultDays(defaultDays);
             config.setCreatedBy(currentUser);
 
-            LeaveRequestDAO dao = new LeaveRequestDAO();
-            boolean success = dao.addConfig(config);
+            // Kiểm tra đã tồn tại cấu hình cho năm + loại phép chưa
+            boolean checkExist = dao.getLeaveConfigByYearType(year, leaveType);
 
-            if (success) {
-                session.setAttribute("successMessage", "Thêm cấu hình thành công!");
+            if (checkExist) {
+                // Nếu đã tồn tại → không cho thêm, báo lỗi
+                session.setAttribute("error", "Cấu hình cho năm " + year + " và loại phép '" + leaveType.getLeaveTypeName() + "' đã tồn tại!");
             } else {
-                session.setAttribute("errorMessage", "Thêm cấu hình thất bại!");
+                // Nếu chưa tồn tại → thêm mới
+                boolean success = dao.addConfig(config);
+
+                if (success) {
+                    session.setAttribute("message", "Thêm cấu hình thành công!");
+                } else {
+                    session.setAttribute("error", "Thêm cấu hình thất bại!");
+                }
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("errorMessage", "Có lỗi xảy ra!");
+            session.setAttribute("error", "Có lỗi xảy ra!");
         }
 
-        // Sau khi thêm → quay lại danh sách
         response.sendRedirect(request.getContextPath() + "/manager/leave-config");
     }
+
 }
