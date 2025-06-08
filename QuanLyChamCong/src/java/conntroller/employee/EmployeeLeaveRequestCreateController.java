@@ -2,7 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package conntroller.employee;
 
 import dal.LeaveRequestDAO;
@@ -16,15 +15,27 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import model.LeaveType;
 import model.Users;
 
-@WebServlet(name="EmployeeLeaveRequestCreateController", urlPatterns={"/employee/leave-request-create"})
+@WebServlet(name = "EmployeeLeaveRequestCreateController", urlPatterns = {"/employee/leave-request-create"})
 public class EmployeeLeaveRequestCreateController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/view/employee/leave-request-create.jsp").forward(request, response);
+
+        try {
+            LeaveRequestDAO dao = new LeaveRequestDAO();
+            List<LeaveType> leaveTypes = dao.getAllLeaveTypesActive();
+            request.setAttribute("leaveTypes", leaveTypes);
+            request.getRequestDispatcher("/view/employee/leave-request-create.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect(request.getContextPath() + "/employee/leave-requests");
+        }
     }
 
   @Override
@@ -40,7 +51,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
         // Đọc và parse dữ liệu từ form
         String startStr = request.getParameter("start_date");
         String endStr = request.getParameter("end_date");
-        String leaveType = request.getParameter("leave_type");
+        int leaveTypeId = Integer.parseInt(request.getParameter("leave_type")); 
         String reason = request.getParameter("reason");
 
         // Chuyển đổi sang LocalDate để tính toán
@@ -52,11 +63,12 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response)
 
         // Tạo DAO và gọi hàm tạo đơn
         LeaveRequestDAO dao = new LeaveRequestDAO();
+
         boolean success = dao.createRequest(
                 user.getUserId(),
                 Date.valueOf(start),
                 Date.valueOf(end),
-                leaveType,
+                leaveTypeId,
                 reason,
                 daysCount
         );

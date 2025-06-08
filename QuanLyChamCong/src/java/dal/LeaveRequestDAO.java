@@ -95,7 +95,12 @@ public class LeaveRequestDAO extends DBContext {
                     lr.setUser(requester);
                     lr.setStartDate(rs.getDate("start_date"));
                     lr.setEndDate(rs.getDate("end_date"));
-                    lr.setLeaveType(rs.getString("leave_type"));
+
+                    // leave_type
+                    int leaveTypeId = rs.getInt("leave_type_id");
+                    LeaveRequestDAO ldao = new LeaveRequestDAO();
+                    LeaveType leaveType = ldao.getLeaveTypeById(leaveTypeId);
+                    lr.setLeaveTypeId(leaveType);
                     lr.setStatus(rs.getString("status"));
                     lr.setDaysCount(rs.getInt("days_count"));
                     lr.setReason(rs.getString("reason"));
@@ -198,7 +203,12 @@ public class LeaveRequestDAO extends DBContext {
                 lr.setRequestId(rs.getInt("request_id"));
                 lr.setStartDate(rs.getDate("start_date"));
                 lr.setEndDate(rs.getDate("end_date"));
-                lr.setLeaveType(rs.getString("leave_type"));
+
+                // leave_type
+                int leaveTypeId = rs.getInt("leave_type_id");
+                LeaveRequestDAO ldao = new LeaveRequestDAO();
+                LeaveType leaveType = ldao.getLeaveTypeById(leaveTypeId);
+                lr.setLeaveTypeId(leaveType);
                 lr.setStatus(rs.getString("status"));
                 lr.setDaysCount(rs.getInt("days_count"));
                 lr.setReason(rs.getString("reason"));
@@ -212,25 +222,6 @@ public class LeaveRequestDAO extends DBContext {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public boolean createRequest(int userId, Date startDate, Date endDate, String leaveType, String reason, int daysCount) {
-        String sql = "INSERT INTO leave_requests "
-                + "(user_id, start_date, end_date, leave_type, reason, days_count, status, created_at, approved_by, approve_comment) "
-                + "VALUES (?, ?, ?, ?, ?, ?, 'pending', GETDATE(), NULL, NULL)";
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            ps.setDate(2, startDate);
-            ps.setDate(3, endDate);
-            ps.setString(4, leaveType);
-            ps.setString(5, reason);
-            ps.setInt(6, daysCount);
-            int rows = ps.executeUpdate();
-            return rows > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     public List<LeaveRequest> getRequestsByUserId(int userId) {
@@ -252,7 +243,12 @@ public class LeaveRequestDAO extends DBContext {
                 lr.setUser(requester);
                 lr.setStartDate(rs.getDate("start_date"));
                 lr.setEndDate(rs.getDate("end_date"));
-                lr.setLeaveType(rs.getString("leave_type"));
+
+                // leave_type
+                int leaveTypeId = rs.getInt("leave_type_id");
+                LeaveRequestDAO ldao = new LeaveRequestDAO();
+                LeaveType leaveType = ldao.getLeaveTypeById(leaveTypeId);
+                lr.setLeaveTypeId(leaveType);
                 lr.setStatus(rs.getString("status"));
                 lr.setDaysCount(rs.getInt("days_count"));
                 lr.setReason(rs.getString("reason"));
@@ -524,6 +520,27 @@ public class LeaveRequestDAO extends DBContext {
             ps.setInt(2, config.getLeaveTypeId().getLeaveTypeId());
             ps.setInt(3, config.getDefaultDays());
             ps.setInt(4, config.getConfigId());
+
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean createRequest(int userId, Date startDate, Date endDate, int leaveTypeId, String reason, int daysCount) {
+        String sql = "INSERT INTO leave_requests "
+                + "(user_id, start_date, end_date, leave_type_id, reason, days_count, status, created_at, approved_by, approve_comment) "
+                + "VALUES (?, ?, ?, ?, ?, ?, 'pending', GETDATE(), NULL, NULL)";
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setDate(2, startDate);
+            ps.setDate(3, endDate);
+            ps.setInt(4, leaveTypeId);
+            ps.setString(5, reason);
+            ps.setInt(6, daysCount);
 
             int rows = ps.executeUpdate();
             return rows > 0;

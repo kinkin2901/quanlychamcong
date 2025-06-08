@@ -14,7 +14,7 @@ public class LeaveRequest {
     private Users user;
     private Date startDate;
     private Date endDate;
-    private String leaveType;
+    private LeaveType leaveTypeId;
     private String status;
     private int daysCount;
     private String reason;
@@ -27,14 +27,12 @@ public class LeaveRequest {
     public LeaveRequest() {
     }
 
-
-
-    public LeaveRequest(int requestId, Users user, Date startDate, Date endDate, String leaveType, String status, int daysCount, String reason, Timestamp createdAt, Users approvedBy, String approveComment, List<Locations> locations) {
+    public LeaveRequest(int requestId, Users user, Date startDate, Date endDate, LeaveType leaveTypeId, String status, int daysCount, String reason, Timestamp createdAt, Users approvedBy, String approveComment, List<Locations> locations) {
         this.requestId = requestId;
         this.user = user;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.leaveType = leaveType;
+        this.leaveTypeId = leaveTypeId;
         this.status = status;
         this.daysCount = daysCount;
         this.reason = reason;
@@ -84,12 +82,12 @@ public class LeaveRequest {
         this.endDate = endDate;
     }
 
-    public String getLeaveType() {
-        return leaveType;
+    public LeaveType getLeaveTypeId() {
+        return leaveTypeId;
     }
 
-    public void setLeaveType(String leaveType) {
-        this.leaveType = leaveType;
+    public void setLeaveTypeId(LeaveType leaveTypeId) {
+        this.leaveTypeId = leaveTypeId;
     }
 
     public String getStatus() {
@@ -142,7 +140,7 @@ public class LeaveRequest {
 
     @Override
     public String toString() {
-        return "LeaveRequest{" + "requestId=" + requestId + ", user=" + user + ", startDate=" + startDate + ", endDate=" + endDate + ", leaveType=" + leaveType + ", status=" + status + ", daysCount=" + daysCount + ", reason=" + reason + ", createdAt=" + createdAt + ", approvedBy=" + approvedBy + ", approveComment=" + approveComment + ", locations=" + locations + '}';
+        return "LeaveRequest{" + "requestId=" + requestId + ", user=" + user + ", startDate=" + startDate + ", endDate=" + endDate + ", leaveTypeId=" + leaveTypeId + ", status=" + status + ", daysCount=" + daysCount + ", reason=" + reason + ", createdAt=" + createdAt + ", approvedBy=" + approvedBy + ", approveComment=" + approveComment + ", locations=" + locations + '}';
     }
 
 }

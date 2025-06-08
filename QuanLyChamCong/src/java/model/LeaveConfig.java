@@ -10,7 +10,7 @@ public class LeaveConfig {
     private int year;
     private int defaultDays;
     private Users createdBy;
-        private LeaveType leaveTypeId;
+    private LeaveType leaveTypeId;
 
 
     public LeaveConfig() {

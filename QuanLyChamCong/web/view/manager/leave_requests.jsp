@@ -79,7 +79,7 @@
                                     <tr>
                                         <td>${r.requestId}</td>
                                         <td class="text-start fw-semibold">${r.user.fullName}</td>
-                                        <td><span class="badge bg-info bg-gradient text-dark">${r.leaveType}</span></td>
+                                        <td><span class="badge bg-info bg-gradient text-dark">${r.leaveTypeId.leaveTypeName}</span></td>
                                         <td>
                                             <fmt:formatDate value="${r.startDate}" pattern="dd/MM/yyyy" /> -
                                             <fmt:formatDate value="${r.endDate}" pattern="dd/MM/yyyy" />
