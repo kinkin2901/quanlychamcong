@@ -268,76 +268,74 @@ public class LeaveRequestDAO extends DBContext {
 
     public static void main(String[] args) {
         LeaveRequestDAO dao = new LeaveRequestDAO();
-List<LeaveConfig> list = dao.getAllConfigs();
+        List<LeaveConfig> list = dao.getAllConfigs();
         for (LeaveConfig leaveConfig : list) {
             System.out.println(leaveConfig.toString());
         }
     }
 
     // Lấy danh sách LeaveConfig
-   public List<LeaveConfig> getAllConfigs() {
-    List<LeaveConfig> list = new ArrayList<>();
-    String sql = "SELECT lc.config_id, lc.year, lc.default_days, lc.created_by, lc.leave_type_id, " +
-                 "u.full_name AS creator_name, " +
-                 "lt.leave_type_name, lt.status " +
-                 "FROM leave_config lc " +
-                 "LEFT JOIN users u ON lc.created_by = u.user_id " +
-                 "LEFT JOIN leave_types lt ON lc.leave_type_id = lt.leave_type_id " +
-                 "ORDER BY lc.year DESC, lt.leave_type_name";
+    public List<LeaveConfig> getAllConfigs() {
+        List<LeaveConfig> list = new ArrayList<>();
+        String sql = "SELECT lc.config_id, lc.year, lc.default_days, lc.created_by, lc.leave_type_id, "
+                + "u.full_name AS creator_name, "
+                + "lt.leave_type_name, lt.status "
+                + "FROM leave_config lc "
+                + "LEFT JOIN users u ON lc.created_by = u.user_id "
+                + "LEFT JOIN leave_types lt ON lc.leave_type_id = lt.leave_type_id "
+                + "ORDER BY lc.year DESC, lt.leave_type_name";
 
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            LeaveConfig config = new LeaveConfig();
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                LeaveConfig config = new LeaveConfig();
 
-            config.setConfigId(rs.getInt("config_id"));
-            config.setYear(rs.getInt("year"));
-            config.setDefaultDays(rs.getInt("default_days"));
+                config.setConfigId(rs.getInt("config_id"));
+                config.setYear(rs.getInt("year"));
+                config.setDefaultDays(rs.getInt("default_days"));
 
-            // Set createdBy
-            Users creator = new Users();
-            creator.setUserId(rs.getInt("created_by"));
-            creator.setFullName(rs.getString("creator_name"));
-            config.setCreatedBy(creator);
+                // Set createdBy
+                Users creator = new Users();
+                creator.setUserId(rs.getInt("created_by"));
+                creator.setFullName(rs.getString("creator_name"));
+                config.setCreatedBy(creator);
 
-            // Set LeaveType
-            LeaveType leaveType = new LeaveType();
-            leaveType.setLeaveTypeId(rs.getInt("leave_type_id"));
-            leaveType.setLeaveTypeName(rs.getString("leave_type_name"));
-            leaveType.setStatus(rs.getString("status"));
-            config.setLeaveTypeId(leaveType);
+                // Set LeaveType
+                LeaveType leaveType = new LeaveType();
+                leaveType.setLeaveTypeId(rs.getInt("leave_type_id"));
+                leaveType.setLeaveTypeName(rs.getString("leave_type_name"));
+                leaveType.setStatus(rs.getString("status"));
+                config.setLeaveTypeId(leaveType);
 
-            // Add to list
-            list.add(config);
+                // Add to list
+                list.add(config);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
 
-    return list;
-}
+        return list;
+    }
 
 // Thêm mới LeaveConfig
+    public boolean addConfig(LeaveConfig config) {
+        String sql = "INSERT INTO leave_config (year, leave_type_id, default_days, created_by) VALUES (?, ?, ?, ?)";
 
- public boolean addConfig(LeaveConfig config) {
-    String sql = "INSERT INTO leave_config (year, leave_type_id, default_days, created_by) VALUES (?, ?, ?, ?)";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, config.getYear());
+            ps.setInt(2, config.getLeaveTypeId().getLeaveTypeId());
+            ps.setInt(3, config.getDefaultDays());
+            ps.setInt(4, config.getCreatedBy().getUserId());
 
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, config.getYear());
-        ps.setInt(2, config.getLeaveTypeId().getLeaveTypeId());  
-        ps.setInt(3, config.getDefaultDays());
-        ps.setInt(4, config.getCreatedBy().getUserId());
-
-        int rows = ps.executeUpdate();
-        return rows > 0;
-    } catch (Exception e) {
-        e.printStackTrace();
-        return false;
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-}
 
 // Xóa LeaveConfig
-
     public boolean deleteConfig(int configId) {
         String sql = "DELETE FROM leave_config WHERE config_id = ?";
 
@@ -444,46 +442,95 @@ List<LeaveConfig> list = dao.getAllConfigs();
         return null; // Nếu không tìm thấy
     }
 
-public List<LeaveType> getAllLeaveTypesActive() {
-    List<LeaveType> list = new ArrayList<>();
-    String sql = "SELECT leave_type_id, leave_type_name, status FROM leave_types WHERE status = 'active' ORDER BY leave_type_name";
+    public List<LeaveType> getAllLeaveTypesActive() {
+        List<LeaveType> list = new ArrayList<>();
+        String sql = "SELECT leave_type_id, leave_type_name, status FROM leave_types WHERE status = 'active' ORDER BY leave_type_name";
 
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-        while (rs.next()) {
-            LeaveType lt = new LeaveType();
-            lt.setLeaveTypeId(rs.getInt("leave_type_id"));
-            lt.setLeaveTypeName(rs.getString("leave_type_name"));
-            lt.setStatus(rs.getString("status"));
+            while (rs.next()) {
+                LeaveType lt = new LeaveType();
+                lt.setLeaveTypeId(rs.getInt("leave_type_id"));
+                lt.setLeaveTypeName(rs.getString("leave_type_name"));
+                lt.setStatus(rs.getString("status"));
 
-            list.add(lt);
+                list.add(lt);
+            }
+
+        } catch (Exception e) {
+            System.err.println("❌ Error in getAllLeaveTypesActive:");
+            e.printStackTrace();
         }
 
-    } catch (Exception e) {
-        System.err.println("❌ Error in getAllLeaveTypesActive:");
-        e.printStackTrace();
+        return list;
     }
 
-    return list;
-}
+    public boolean getLeaveConfigByYearType(int year, LeaveType leaveType) {
+        String sql = "SELECT 1 FROM leave_config WHERE year = ? AND leave_type_id = ?";
 
-   public boolean getLeaveConfigByYearType(int year, LeaveType leaveType) {
-    String sql = "SELECT 1 FROM leave_config WHERE year = ? AND leave_type_id = ?";
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, year);
+            ps.setInt(2, leaveType.getLeaveTypeId());
 
-    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setInt(1, year);
-        ps.setInt(2, leaveType.getLeaveTypeId());  
-
-        try (ResultSet rs = ps.executeQuery()) {
-            return rs.next();
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-        return false;  
     }
-}
 
+    public LeaveConfig getLeaveConfigById(int id) {
+        String sql = "SELECT lc.config_id, lc.year, lc.default_days, lc.created_by, lc.leave_type_id "
+                + "FROM leave_config lc "
+                + "WHERE lc.config_id = ?";
 
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                LeaveConfig config = new LeaveConfig();
 
+                config.setConfigId(rs.getInt("config_id"));
+                config.setYear(rs.getInt("year"));
+                config.setDefaultDays(rs.getInt("default_days"));
+
+                // created_by
+                int creatorId = rs.getInt("created_by");
+                UserDAO udao = new UserDAO();
+                Users creator = udao.getUserById(creatorId);
+                config.setCreatedBy(creator);
+
+                // leave_type
+                int leaveTypeId = rs.getInt("leave_type_id");
+                LeaveRequestDAO ldao = new LeaveRequestDAO();
+                LeaveType leaveType = ldao.getLeaveTypeById(leaveTypeId);
+                config.setLeaveTypeId(leaveType);
+
+                return config;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean updateLeaveConfig(LeaveConfig config) {
+        String sql = "UPDATE leave_config SET year = ?, leave_type_id = ?, default_days = ? WHERE config_id = ?";
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, config.getYear());
+            ps.setInt(2, config.getLeaveTypeId().getLeaveTypeId());
+            ps.setInt(3, config.getDefaultDays());
+            ps.setInt(4, config.getConfigId());
+
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }
